@@ -13,6 +13,10 @@ class camButton:
         sprites = []
         #each button part will pull from this directory
         directory = "cams_assets/button_assets/"
+        #get the foreground of the button
+        button_fg = pygame.image.load(directory + "button_fgs/" + name + ".png")
+        #remove yucky background from the image
+        button_fg.set_colorkey((90, 90, 90))
         #do this twice
         for i in range(2):
             #get the background of the button
@@ -21,6 +25,8 @@ class camButton:
             sprite = pygame.Surface((60, 40))
             #draw the background
             sprite.blit(button_bg, (0, 0))
+            #draw the foreground
+            sprite.blit(button_fg, (8, 7))
             #add the sprite to the list
             sprites.append(sprite)
         #return that list
