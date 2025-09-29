@@ -8,6 +8,8 @@ class camButton:
         #used for click detection since the buttons are drawn, then moved
         self.click_box = pygame.Rect(x + 860, y + 320, 60, 40)
         self.selected = selected
+        #used for making the button flash when selected
+        self.flash = False
         self.sprites = self.gen_sprites(name)
         
     def gen_sprites(self, name):
@@ -38,7 +40,7 @@ class camButton:
     def get_cur_sprite(self):
         ''' Returns the current sprite '''
         #gets the sprite by converting the bool into an int, (False = 0 True = 1)
-        return self.sprites[int(self.selected)]
+        return self.sprites[int(self.selected) - int(self.flash)]
 
     def draw_self(self, surface):
         ''' Draws the sprite to the surface '''
@@ -49,6 +51,7 @@ class CamMap:
         ''' Handles the cam map and holds the buttons '''
         self.buttons = self.gen_buttons()
         self.map_sprite = self.gen_cur_sprite()
+        self.button_flash_timer = 0
     
     def gen_buttons(self):
         ''' Creates all buttons when game starts '''
@@ -94,6 +97,19 @@ class CamMap:
         #return the condition of the cam system sprite
         return sprite
 
+    def button_flash(self):
+        ''' Handles the button flashing '''
+        #add to the timer
+        self.button_flash_timer += 1
+        #if it has been one second, do the thing
+        if self.button_flash_timer == 40:
+            #swap the flash
+            self.cur_true_button.flash = not self.cur_true_button.flash
+            #update the image
+            self.map_sprite = self.gen_cur_sprite()
+            #reset the timer
+            self.button_flash_timer = 0
+
     def draw_self(self, surface, x, y):
         ''' Draws the map object at given x and y '''
         surface.blit(self.map_sprite, (x, y))
@@ -115,6 +131,10 @@ class Manager:
                     button.selected = True
                     #set the currently selected button to false
                     self.cam_map.cur_true_button.selected = False
+                    #reset the flash on the old cam button
+                    self.cam_map.cur_true_button.flash = False
+                    #reset the flash timer
+                    self.cam_map.button_flash_timer = 0
                     #update the map sprite
                     self.cam_map.map_sprite = self.cam_map.gen_cur_sprite()
                     #set it to be the current true button

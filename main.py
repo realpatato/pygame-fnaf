@@ -34,6 +34,9 @@ while keep_playing:
         if event.type == pygame.MOUSEBUTTONDOWN:
             mouse_pos = event.pos
             man.check_for_button_click(mouse_pos[0], mouse_pos[1])
+
+    #do the flash thing
+    man.cam_map.button_flash()
     
     #intial screen wipe
     screen.fill((0, 0, 0))
