@@ -3,7 +3,10 @@ import pygame
 
 class camButton:
     def __init__(self, x, y, name, selected = False):
-        self.rect = pygame.Rect(x, y, 60, 40)
+        #used only for drawing the button
+        self.draw_rect = pygame.Rect(x, y, 60, 40)
+        #used for click detection since the buttons are drawn, then moved
+        self.click_box = pygame.Rect(x + 860, y + 320, 60, 40)
         self.selected = selected
         self.sprites = self.gen_sprites(name)
         
@@ -39,7 +42,7 @@ class camButton:
 
     def draw_self(self, surface):
         ''' Draws the sprite to the surface '''
-        surface.blit(self.get_cur_sprite(), (self.rect.x, self.rect.y))
+        surface.blit(self.get_cur_sprite(), (self.draw_rect.x, self.draw_rect.y))
 
 class CamMap:
     def __init__(self):
@@ -72,6 +75,8 @@ class CamMap:
             #set 1A to selected, its the default
             if info[2] == "1A":
                 buttons[info[2]].selected = True
+                #stores whatever button is currently true, which will always default to 1A
+                self.cur_true_button = buttons[info[2]]
         #return the dictionary
         return buttons
 
@@ -84,8 +89,8 @@ class CamMap:
         #draw the map on the surface
         sprite.blit(map_sprite, (20, 0))
         #draw the buttons
-        for button_key in self.buttons:
-            self.buttons[button_key].draw_self(sprite)
+        for button in self.buttons.values():
+            button.draw_self(sprite)
         #return the condition of the cam system sprite
         return sprite
 
@@ -97,6 +102,23 @@ class Manager:
     def __init__(self):
         ''' Simply manages cam functions, connecting the pieces, and handles drawing the current camera frame '''
         self.cam_map = CamMap()
+    
+    def check_for_button_click(self, mx, my):
+        ''' Checks for a button click based on given x and y coordinates'''
+        #iterate over the buttons
+        for button in self.cam_map.buttons.values():
+            #check if the mouse is within the button area
+            if (mx > button.click_box.x) and (mx < button.click_box.right) and (my > button.click_box.y) and (my < button.click_box.bottom):
+                #check if already selected
+                if (not button.selected):
+                    #set it to be selected
+                    button.selected = True
+                    #set the currently selected button to false
+                    self.cam_map.cur_true_button.selected = False
+                    #update the map sprite
+                    self.cam_map.map_sprite = self.cam_map.gen_cur_sprite()
+                    #set it to be the current true button
+                    self.cam_map.cur_true_button = button
     
     def gen_cur_sprite(self):
         ''' Generates the current sprite '''

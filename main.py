@@ -30,6 +30,10 @@ while keep_playing:
         if event.type == pygame.QUIT:
             #end the loop
             keep_playing = False
+        #check for click
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            mouse_pos = event.pos
+            man.check_for_button_click(mouse_pos[0], mouse_pos[1])
     
     #intial screen wipe
     screen.fill((0, 0, 0))
