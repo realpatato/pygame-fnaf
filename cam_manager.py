@@ -1,6 +1,9 @@
 ''' IMPORTS '''
 import pygame
 
+#initialize the audio module
+pygame.mixer.init()
+
 class camButton:
     def __init__(self, x, y, name, selected = False):
         #used only for drawing the button
@@ -118,6 +121,13 @@ class Manager:
     def __init__(self):
         ''' Simply manages cam functions, connecting the pieces, and handles drawing the current camera frame '''
         self.cam_map = CamMap()
+        self.audios = self.get_audios()
+
+    def get_audios(self):
+        ''' Returns all audios and stores them in a dictionary '''
+        return {
+            "cam_switch" : pygame.mixer.Sound("sfx/switch.wav")
+        }
     
     def check_for_button_click(self, mx, my):
         ''' Checks for a button click based on given x and y coordinates'''
@@ -125,6 +135,8 @@ class Manager:
         for button in self.cam_map.buttons.values():
             #check if the mouse is within the button area
             if (mx > button.click_box.x) and (mx < button.click_box.right) and (my > button.click_box.y) and (my < button.click_box.bottom):
+                #play the cam switch sound effect (happens anytime you click the camera)
+                pygame.mixer.Sound.play(self.audios["cam_switch"])
                 #check if already selected
                 if (not button.selected):
                     #set it to be selected

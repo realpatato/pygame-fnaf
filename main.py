@@ -32,8 +32,10 @@ while keep_playing:
             keep_playing = False
         #check for click
         if event.type == pygame.MOUSEBUTTONDOWN:
-            mouse_pos = event.pos
-            man.check_for_button_click(mouse_pos[0], mouse_pos[1])
+            #check it is the lmb
+            if event.button == 1:
+                mouse_pos = event.pos
+                man.check_for_button_click(mouse_pos[0], mouse_pos[1])
 
     #do the flash thing
     man.cam_map.button_flash()
