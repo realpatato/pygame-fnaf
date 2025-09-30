@@ -104,8 +104,8 @@ class CamMap:
         ''' Handles the button flashing '''
         #add to the timer
         self.button_flash_timer += 1
-        #if it has been one second, do the thing
-        if self.button_flash_timer == 40:
+        #checks if the timer has been reached, if its green it lasts an extra frame
+        if self.button_flash_timer == 37 + int(self.cur_true_button.flash):
             #swap the flash
             self.cur_true_button.flash = not self.cur_true_button.flash
             #update the image
