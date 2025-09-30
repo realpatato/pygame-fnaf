@@ -4,12 +4,12 @@ import pygame
 #initialize the audio module
 pygame.mixer.init()
 
-class camButton:
+class CamButton:
     def __init__(self, x, y, name, selected = False):
         #used only for drawing the button
         self.draw_rect = pygame.Rect(x, y, 60, 40)
         #used for click detection since the buttons are drawn, then moved
-        self.click_box = pygame.Rect(x + 860, y + 320, 60, 40)
+        self.click_box = pygame.Rect(x + 860, y + 299, 60, 40)
         self.selected = selected
         #used for making the button flash when selected
         self.flash = False
@@ -30,7 +30,7 @@ class camButton:
             #get the background of the button
             button_bg = pygame.image.load(directory + "button_bgs/selected" + str(bool(i)) + ".png")
             #create an empty surface fdor drawing the sprite
-            sprite = pygame.Surface((60, 40))
+            sprite = pygame.Surface((60, 40), pygame.SRCALPHA)
             #draw the background
             sprite.blit(button_bg, (0, 0))
             #draw the foreground
@@ -49,54 +49,79 @@ class camButton:
         ''' Draws the sprite to the surface '''
         surface.blit(self.get_cur_sprite(), (self.draw_rect.x, self.draw_rect.y))
 
+class CamCaption:
+    def __init__(self, name):
+        self.x = 6
+        self.y = 0
+        self.sprite = self.gen_sprite(name)
+    
+    def gen_sprite(self, name):
+        ''' Generates the sprite for the caption '''
+        #loads the image
+        sprite = pygame.image.load("cam_assets/captions/" + name + "_caption.png")
+        #removes background
+        sprite.set_colorkey((90, 90, 90))
+        #returns the sprite
+        return sprite
+
+    def draw_self(self, surface):
+        ''' Draws the caption object '''
+        surface.blit(self.sprite, (self.x, self.y))
+
 class CamMap:
     def __init__(self):
         ''' Handles the cam map and holds the buttons '''
-        self.buttons = self.gen_buttons()
+        self.buttons, self.captions = self.gen_buttons_and_captions()
         self.map_sprite = self.gen_cur_sprite()
         self.button_flash_timer = 0
     
-    def gen_buttons(self):
+    def gen_buttons_and_captions(self):
         ''' Creates all buttons when game starts '''
         #stores the info for the buttons
         button_info = [
-            [126, 21, "1A"],
-            [106, 76, "1B"],
-            [74, 154, "1C"],
-            [126, 270, "2A"],
-            [126, 310, "2B"],
-            [42, 252, "3"],
-            [232, 271, "4A"],
-            [232, 311, "4B"],
-            [0, 103, "5"],
-            [329, 235, "6"],
-            [338, 104, "7"]
+            [126, 42, "1A"],
+            [106, 97, "1B"],
+            [74, 175, "1C"],
+            [126, 291, "2A"],
+            [126, 331, "2B"],
+            [42, 273, "3"],
+            [232, 292, "4A"],
+            [232, 332, "4B"],
+            [0, 124, "5"],
+            [329, 256, "6"],
+            [338, 125, "7"]
         ]
         #empty dictionary to store buttons
         buttons = {}
+        #empty dictionary to store captions
+        captions = {}
         #iterate over the button info
         for info in button_info:
             #store a button with certain values
-            buttons[info[2]] = camButton(info[0], info[1], info[2])
+            buttons[info[2]] = CamButton(info[0], info[1], info[2])
+            #store a caption with specific name
+            captions[info[2]] = CamCaption(info[2])
             #set 1A to selected, its the default
             if info[2] == "1A":
                 buttons[info[2]].selected = True
                 #stores whatever button is currently true, which will always default to 1A
                 self.cur_true_button = buttons[info[2]]
         #return the dictionary
-        return buttons
+        return buttons, captions
 
     def gen_cur_sprite(self):
         ''' Generates the sprite at the current moment '''
-        #start with an empty surface, takes up the whole screen since the actual cam is drawn here too
-        sprite = pygame.Surface((420, 400))
+        #start with an empty surface, just enough space for the buttons, the buttons, and the caption
+        sprite = pygame.Surface((420, 421))
         #get the map image
         map_sprite = pygame.image.load("cam_assets/map.png")
         #draw the map on the surface
-        sprite.blit(map_sprite, (20, 0))
+        sprite.blit(map_sprite, (20, 21))
         #draw the buttons
-        for button in self.buttons.values():
+        for button_name, button in self.buttons.items():
             button.draw_self(sprite)
+            if button.selected:
+                self.captions[button_name].draw_self(sprite)
         #return the condition of the cam system sprite
         return sprite
 
@@ -157,7 +182,7 @@ class Manager:
         #takes up the whole screen, so we make a surface that size
         sprite = pygame.Surface((1280, 720))
         #draw the map to the surface
-        self.cam_map.draw_self(sprite, 860, 320)
+        self.cam_map.draw_self(sprite, 860, 299)
         #return the sprite
         return sprite
 

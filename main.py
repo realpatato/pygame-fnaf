@@ -1,8 +1,8 @@
 ''' IMPORTS '''
 import pygame
-import cam_manager
+import cam_manager as cm
 
-man = cam_manager.Manager()
+cam_man = cm.Manager()
 
 ''' PYGAME SETUP '''
 #initialize the pygame module
@@ -21,6 +21,8 @@ pygame.display.set_caption("FNAF")
 clock = pygame.time.Clock()
 #variable to control the game loop
 keep_playing = True
+#varible for knowing if in cams or not
+in_cams = True
 
 ''' LOOP '''
 while keep_playing:
@@ -35,15 +37,20 @@ while keep_playing:
             #check it is the lmb
             if event.button == 1:
                 mouse_pos = event.pos
-                man.check_for_button_click(mouse_pos[0], mouse_pos[1])
+                if in_cams:
+                    cam_man.check_for_button_click(mouse_pos[0], mouse_pos[1])
 
+    ''' THINGS HAPPENING REGARDLESS OF IF IN CAMS OR NOT '''
     #do the flash thing
-    man.cam_map.button_flash()
+    cam_man.cam_map.button_flash()
     
     #intial screen wipe
     screen.fill((0, 0, 0))
 
-    man.draw_self(screen)
+    ''' IF IN CAMS '''
+    if in_cams:
+        #draws the state of cams
+        cam_man.draw_self(screen)
 
     #update the display
     pygame.display.update()
