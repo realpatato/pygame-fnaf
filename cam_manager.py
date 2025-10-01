@@ -1,11 +1,13 @@
 ''' IMPORTS '''
 import pygame
+import static_handler as sh
 
 #initialize the audio module
 pygame.mixer.init()
 
 class CamButton:
     def __init__(self, x, y, name, selected = False):
+        ''' A button on the map '''
         #used only for drawing the button
         self.draw_rect = pygame.Rect(x, y, 60, 40)
         #used for click detection since the buttons are drawn, then moved
@@ -112,7 +114,7 @@ class CamMap:
     def gen_cur_sprite(self):
         ''' Generates the sprite at the current moment '''
         #start with an empty surface, just enough space for the buttons, the buttons, and the caption
-        sprite = pygame.Surface((420, 421))
+        sprite = pygame.Surface((420, 421), pygame.SRCALPHA)
         #get the map image
         map_sprite = pygame.image.load("cam_assets/map.png")
         #draw the map on the surface
@@ -146,6 +148,7 @@ class Manager:
     def __init__(self):
         ''' Simply manages cam functions, connecting the pieces, and handles drawing the current camera frame '''
         self.cam_map = CamMap()
+        self.static = sh.Static(30)
         self.audios = self.get_audios()
 
     def get_audios(self):
@@ -181,6 +184,8 @@ class Manager:
         ''' Generates the current sprite '''
         #takes up the whole screen, so we make a surface that size
         sprite = pygame.Surface((1280, 720))
+        #draw the static to the surface
+        self.static.draw_self(sprite)
         #draw the map to the surface
         self.cam_map.draw_self(sprite, 860, 299)
         #return the sprite
