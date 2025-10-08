@@ -23,18 +23,13 @@ class Static:
         return sprites
     
     def get_cur_sprite(self):
+        ''' Gets the current sprite of the static, we use a frame advance instead of select a random frame to prevent repeated frames '''
         #random number that will be the amount to advance in the sprite list
         frame_advance = randint(1, 3)
-        #loop so that we don't go out of range
-        for i in range(frame_advance):
-            #add to the index
-            self.sprite_index += 1
-            #if we're out of range
-            if self.sprite_index == 8:
-                #set it to 0
-                self.sprite_index = 0
-        #return the random sprite
-        return self.sprites[self.sprite_index]
+        #add the amound of fram advancement
+        self.sprite_index += frame_advance
+        #return the random sprite, using mod 8 so the index is in range
+        return self.sprites[self.sprite_index % 8]
 
     def draw_self(self, surface):
         ''' Draws the static to the surface '''
